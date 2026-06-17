@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Lucky Charm · Owner App</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --bg:#f5f6fa; --surface:#ffffff; --surface2:#f8f9fc; --border:#e3e6ef; --border2:#cdd2e0;
+    --text:#1a1f36; --text2:#6b7280; --text3:#a0abbe;
+    --accent:#c0392b; --accent-h:#a93226; --accent-s:rgba(192,57,43,0.07);
+    --red:#e53935; --red-soft:#fff1f0; --red-border:#ffcdd2; --red-text:#c62828;
+    --amber:#f59300; --amber-soft:#fff8e1; --amber-border:#ffe082; --amber-text:#e65100;
+    --green:#1aab6d; --green-soft:#e8f8f2; --green-border:#a8e6cf; --green-text:#0d7a4e;
+    --blue:#1976d2; --blue-soft:#e3f0ff; --blue-border:#90caf9; --blue-text:#0d47a1;
+    --header-h:56px; --tabbar-h:64px;
+    --font:'Nunito',sans-serif; --mono:'DM Mono',monospace;
+    --r:9px; --r-lg:12px; --r-xl:16px;
+    --shadow:0 1px 4px rgba(26,31,54,.07); --shadow-md:0 10px 34px rgba(26,31,54,.18);
+  }
+  html,body{height:100%;}
+  body{margin:0;font-family:var(--font);font-size:14.5px;line-height:1.5;color:var(--text);
+    background:#0b0e16;display:flex;align-items:center;justify-content:center;min-height:100vh;}
+  ::-webkit-scrollbar{width:0;height:0;}
+
+  /* Phone shell — fills screen on phones, framed on desktop */
+  .phone{position:relative;width:100%;max-width:420px;height:100vh;max-height:900px;background:var(--bg);overflow:hidden;display:flex;flex-direction:column;}
+  @media(min-width:480px){ .phone{height:880px;border-radius:42px;box-shadow:0 30px 80px rgba(0,0,0,.55);border:9px solid #20242e;} }
+
+  /* App header */
+  .appbar{height:var(--header-h);flex-shrink:0;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;padding:0 16px;z-index:20;}
+  .appbar .logo{width:32px;height:32px;border-radius:9px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+  .appbar .title{font-size:16px;font-weight:800;letter-spacing:-.2px;line-height:1.15;}
+  .appbar .sub{font-size:11px;color:var(--text3);font-weight:600;}
+  .appbar .spacer{flex:1;}
+  .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+  /* Scroll area */
+  .screen{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:14px 13px calc(var(--tabbar-h) + 16px);background:var(--bg);-webkit-overflow-scrolling:touch;}
+  .panel{display:none;} .panel.active{display:block;}
+
+  /* Bottom tab bar */
+  .tabbar{position:absolute;left:0;right:0;bottom:0;height:var(--tabbar-h);background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:30;box-shadow:0 -2px 12px rgba(26,31,54,.06);}
+  .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--text3);font-size:10.5px;font-weight:700;border:none;background:none;font-family:var(--font);padding-top:6px;transition:color .12s;}
+  .nav-item svg{width:21px;height:21px;}
+  .nav-item.active{color:var(--accent);}
+
+  /* Components */
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:12px 13px;box-shadow:var(--shadow);}
+  .stat.b{border-left:3px solid var(--blue);} .stat.g{border-left:3px solid var(--green);} .stat.a{border-left:3px solid var(--amber);} .stat.r{border-left:3px solid var(--accent);}
+  .stat .l{font-size:10.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+  .stat .v{font-size:22px;font-weight:300;letter-spacing:-.5px;color:var(--text);}
+  .stat .s{font-size:11px;color:var(--text3);font-weight:600;margin-top:2px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:14px 15px;box-shadow:var(--shadow);margin-bottom:14px;overflow-x:auto;}
+  .card-t{font-size:14.5px;font-weight:800;} .card-sub{font-size:12px;color:var(--text3);font-weight:500;margin-bottom:6px;}
+  table.tbl{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.tbl thead tr{background:var(--surface2);}
+  table.tbl th{padding:7px 11px;text-align:left;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
+  table.tbl td{padding:8px 11px;border-top:1px solid var(--border);color:var(--text);}
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:100px;font-size:11.5px;font-weight:700;}
+  .badge.open{background:var(--amber-soft);color:var(--amber-text);} .badge.prog{background:var(--blue-soft);color:var(--blue-text);}
+  .badge.done{background:var(--green-soft);color:var(--green-text);} .badge.p1{background:var(--red-soft);color:var(--red-text);}
+  .badge.p2{background:var(--amber-soft);color:var(--amber-text);} .badge.p3{background:var(--blue-soft);color:var(--blue-text);}
+  .mini{display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface);color:var(--text2);font-size:12.5px;font-weight:700;cursor:pointer;font-family:var(--font);}
+  .mini:hover{background:var(--bg);} .mini.prim{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .prog{height:9px;border-radius:100px;background:var(--border2);overflow:hidden;} .prog>i{display:block;height:100%;background:var(--accent);}
+  .range{width:100%;height:6px;-webkit-appearance:none;appearance:none;background:var(--border2);border-radius:100px;outline:none;accent-color:var(--accent);}
+  .range::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--accent);border:3px solid #fff;box-shadow:var(--shadow);}
+  .range::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--accent);border:3px solid #fff;}
+  .prng{font-size:11px;font-weight:700;color:var(--text3);cursor:pointer;} .prng.active{color:var(--accent);}
+  .eb .ebbar{transition:fill .12s;} .eb:hover .ebbar{fill:var(--accent-h);} .ebtip{opacity:0;transition:opacity .12s;pointer-events:none;} .eb:hover .ebtip{opacity:1;}
+  input,select,textarea{font-family:var(--font);font-size:14px;padding:10px 11px;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--text);}
+  textarea{resize:vertical;min-height:74px;width:100%;}
+  .grid3,[style*="grid-template-columns:1fr 1fr"],[style*="grid-template-columns:repeat(3"]{grid-template-columns:1fr!important;}
+
+  /* Modal — bottom sheet style */
+  .mdl{position:absolute;inset:0;background:rgba(15,20,30,.45);display:none;align-items:flex-end;justify-content:center;z-index:200;}
+  .mdl.open{display:flex;}
+  .mdl-box{background:var(--surface);border-radius:18px 18px 0 0;width:100%;max-height:92%;overflow:auto;animation:sheet .22s ease;}
+  @keyframes sheet{from{transform:translateY(40px);opacity:.6;}to{transform:none;opacity:1;}}
+  .mdl-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);}
+  .mdl-bd{padding:16px 18px;} .mdl-ft{display:flex;justify-content:flex-end;gap:10px;padding:13px 18px;border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--surface);}
+  .x{cursor:pointer;font-size:22px;color:var(--text3);background:none;border:none;}
+  .fld{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+  .fld>label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;}
+  .fld input,.fld select,.fld textarea{width:100%;}
+  .kv{display:flex;justify-content:space-between;gap:14px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .kv .k{color:var(--text3);font-weight:600;} .kv .vv{font-weight:700;text-align:right;}
+  .tl{position:relative;padding-left:18px;} .tl::before{content:"";position:absolute;left:5px;top:4px;bottom:4px;width:2px;background:var(--border2);}
+  .tl-item{position:relative;padding-bottom:13px;} .tl-item::before{content:"";position:absolute;left:-15px;top:3px;width:9px;height:9px;border-radius:50%;background:var(--accent);border:2px solid var(--surface);}
+  .toast{position:absolute;bottom:calc(var(--tabbar-h) + 14px);left:50%;transform:translateX(-50%) translateY(120px);background:#1a1f36;color:#fff;padding:11px 17px;border-radius:100px;font-size:13px;font-weight:700;box-shadow:var(--shadow-md);display:flex;gap:8px;z-index:300;transition:transform .25s;white-space:nowrap;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+
+  /* Login */
+  .login-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(150deg,#1a1f36,#2a3550 60%,#3a2230);z-index:100;}
+  .login-card{width:100%;}
+  .login-card .lg-logo{width:60px;height:60px;border-radius:16px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 18px;box-shadow:0 10px 26px rgba(192,57,43,.5);}
+  .login-card h1{font-size:22px;font-weight:800;color:#fff;text-align:center;}
+  .login-card .sub{font-size:13px;color:#aeb8d0;font-weight:600;text-align:center;margin-bottom:24px;}
+  .login-card label{display:block;font-size:11px;font-weight:700;color:#aeb8d0;text-transform:uppercase;letter-spacing:.05em;margin:0 0 5px;}
+  .login-card input{width:100%;font-size:15px;padding:12px 13px;border:1px solid rgba(255,255,255,.15);border-radius:var(--r);background:rgba(255,255,255,.06);color:#fff;margin-bottom:15px;}
+  .login-card input::placeholder{color:#7e88a0;} 
+  .login-btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:13px;font-size:15px;font-weight:800;cursor:pointer;font-family:var(--font);}
+  .login-btn:hover{background:var(--accent-h);}
+  .login-hint{font-size:11px;color:#8b95ad;text-align:center;margin-top:16px;}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- LOGIN -->
+  <div class="login-wrap" id="login">
+    <div class="login-card">
+      <div class="lg-logo">🍀</div>
+      <h1>Owner App</h1>
+      <div class="sub">Lucky Charm Gaming · Tipsy Crow</div>
+      <label>Username</label>
+      <input id="lg-user" type="text" value="patricia" placeholder="Username" onkeydown="opLoginKey(event)">
+      <label>Password</label>
+      <input id="lg-pass" type="password" value="demo1234" placeholder="Password" onkeydown="opLoginKey(event)">
+      <div id="lg-err" style="font-size:12px;color:#ffb3ab;font-weight:600;margin:-8px 0 12px;"></div>
+      <button class="login-btn" onclick="opLogin()">Log in</button>
+      <div class="login-hint">Demo app · any credentials sign you in</div>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="app" style="display:none;height:100%;flex-direction:column;">
+    <header class="appbar">
+      <div class="logo">🍀</div>
+      <div><div class="title" id="tb-title">Revenue</div><div class="sub" id="tb-sub">Your location revenue</div></div>
+      <div class="spacer"></div>
+      <span class="sync-dot"></span>
+    </header>
+
+    <div class="screen" id="app-scroll">
+<!-- ───── REVENUE ───── -->
+  <div class="panel active" id="p-revenue">
+    <div class="stat-grid">
+      <div class="stat g"><div class="l">Net Win · <span id="k-p">7 days</span></div><div class="v" id="k-net" style="font-size:23px;">$16,415</div><div class="s" id="k-delta" style="color:var(--green-text);">▲ 6.5% vs prior</div></div>
+      <div class="stat r"><div class="l">Your Share (40%)</div><div class="v" id="k-share" style="font-size:23px;">$6,566</div><div class="s">location revenue share</div></div>
+      <div class="stat a"><div class="l">Hold %</div><div class="v">8.1%</div><div class="s">net win ÷ amount played</div></div>
+      <div class="stat b"><div class="l">Win / Machine / Day</div><div class="v">$195</div><div class="s">avg · 12 machines</div></div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div class="card-t">Time range</div><div style="font-size:12px;color:var(--text3);font-weight:600;">⟷ Drag to change period</div>
+      </div>
+      <input id="period-slider" class="range" type="range" min="0" max="5" step="1" value="0" oninput="opPeriodSlide(this.value)">
+      <div style="display:flex;justify-content:space-between;margin-top:9px;">
+        <span class="prng active" id="prng-0" onclick="opSetPeriod(0)">7 Days</span>
+        <span class="prng" id="prng-1" onclick="opSetPeriod(1)">Week</span>
+        <span class="prng" id="prng-2" onclick="opSetPeriod(2)">Month</span>
+        <span class="prng" id="prng-3" onclick="opSetPeriod(3)">Quarter</span>
+        <span class="prng" id="prng-4" onclick="opSetPeriod(4)">Year</span>
+        <span class="prng" id="prng-5" onclick="opSetPeriod(5)">Custom</span>
+      </div>
+      <div id="custom-panel" style="display:none;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+        <label style="font-size:12px;font-weight:700;color:var(--text3);display:flex;flex-direction:column;gap:4px;">From<input type="date" id="cust-from"></label>
+        <label style="font-size:12px;font-weight:700;color:var(--text3);display:flex;flex-direction:column;gap:4px;">To<input type="date" id="cust-to"></label>
+        <button class="mini prim" onclick="opApplyCustom()">Apply range</button>
+        <span id="cust-info" style="font-size:12.5px;color:var(--text3);font-weight:600;"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-t" id="chart-t">Revenue · last 7 days</div>
+      <div class="card-sub" id="chart-sub">Daily net win for your location</div>
+      <svg viewBox="0 0 720 220" style="width:100%;height:220px;" id="rev-chart"></svg>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" class="grid3">
+      <div class="card">
+        <div class="card-t">Your revenue share</div>
+        <div class="card-sub">Per the 60 / 40 agreement</div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px;">
+          <div><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:4px;"><span>Operator (60%)</span><span style="font-weight:800;" id="split-op">$9,849</span></div><div class="prog"><i style="width:60%;background:var(--text3);"></i></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:4px;"><span>You — Location (40%)</span><span style="font-weight:800;" id="split-loc">$6,566</span></div><div class="prog"><i style="width:40%;background:var(--accent);"></i></div></div>
+          <div style="border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between;font-size:13.5px;"><span style="color:var(--text2);font-weight:600;">Total net win · <span id="split-unit">7 days</span></span><span style="font-weight:800;" id="split-total">$16,415</span></div>
+        </div>
+      </div>
+      <div class="card" style="padding:0;">
+        <div style="padding:12px 16px;font-size:14px;font-weight:800;">Revenue by period</div>
+        <table class="tbl"><thead><tr><th>Period</th><th style="text-align:right;">Net Win</th><th style="text-align:right;">Your Share</th></tr></thead><tbody id="period-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <div class="card" style="padding:0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;gap:12px;flex-wrap:wrap;">
+        <div><div style="font-size:14px;font-weight:800;">Revenue by machine</div><div style="font-size:12.5px;color:var(--text3);font-weight:500;" id="mach-sub">Per-terminal net win · last 7 days</div></div>
+        <input id="mach-search" type="text" placeholder="🔍 Filter machine or game…" oninput="opRenderMachines()" style="flex:1;min-width:170px;max-width:260px;">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-top:1px solid var(--border);">
+        <div style="background:var(--surface);padding:10px 16px;"><div style="font-size:11px;font-weight:800;color:var(--green-text);text-transform:uppercase;">▲ Top performer</div><div id="mach-best" style="font-size:13px;font-weight:600;margin-top:2px;"></div></div>
+        <div style="background:var(--surface);padding:10px 16px;"><div style="font-size:11px;font-weight:800;color:var(--amber-text);text-transform:uppercase;">▼ Needs attention</div><div id="mach-worst" style="font-size:13px;font-weight:600;margin-top:2px;"></div></div>
+      </div>
+      <table class="tbl"><thead><tr>
+        <th>Machine</th><th>Game</th>
+        <th style="text-align:right;cursor:pointer;" id="mcol" onclick="opSortMachines('net')">Net Win ↕</th>
+        <th style="text-align:right;cursor:pointer;" onclick="opSortMachines('share')">Your Share (40%) ↕</th>
+        <th style="text-align:right;cursor:pointer;" onclick="opSortMachines('wpu')">Win/day ↕</th>
+        <th style="text-align:right;">Hold %</th><th style="text-align:right;">Status</th>
+      </tr></thead><tbody id="machines-tbody"></tbody>
+      <tfoot><tr style="border-top:2px solid var(--border2);background:var(--surface2);"><td colspan="2" style="padding:10px 14px;font-weight:800;">Location total</td><td style="text-align:right;padding:10px 14px;font-weight:800;" id="mfoot">$16,415</td><td style="text-align:right;padding:10px 14px;font-weight:800;color:var(--accent);" id="mfoot-share">$6,566</td><td style="text-align:right;padding:10px 14px;font-weight:700;">$195</td><td style="text-align:right;padding:10px 14px;font-weight:700;">8.1%</td><td></td></tr></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- ───── REPORTS ───── -->
+  <div class="panel" id="p-reports">
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--border);">
+        <label style="font-size:12px;font-weight:700;color:var(--text3);margin-right:auto;">Date <input type="date" id="vgt-date" value="2026-06-16" onchange="opVgtRender()" style="margin-left:6px;"></label>
+        <button class="mini" onclick="opVgtEmail()">✉ Email PDF</button>
+        <button class="mini" onclick="opVgtDownloadPdf()">⬇ Download PDF</button>
+        <button class="mini" onclick="opVgtCsv()">⬇ Download CSV</button>
+        <button class="mini prim" onclick="opSchedOpen()">🗓 Schedule report</button>
+      </div>
+      <div id="vgt-report" style="overflow-x:auto;"></div>
+    </div>
+    <div class="card" style="padding:0;">
+      <div style="padding:12px 16px;font-size:14px;font-weight:800;">Scheduled report deliveries</div>
+      <table class="tbl"><thead><tr><th>Report</th><th>Cadence</th><th>Recipient</th><th>Next send</th><th style="text-align:right;">Action</th></tr></thead><tbody id="sched-tbody"></tbody></table>
+    </div>
+  </div>
+
+  <!-- ───── VISIT HISTORY ───── -->
+  <div class="panel" id="p-visits">
+    <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);">
+      <div class="stat r"><div class="l">Last Sales Visit</div><div class="v" id="vh-sales-last" style="font-size:18px;margin-top:6px;">—</div><div class="s" id="vh-sales-by">—</div></div>
+      <div class="stat g"><div class="l">Last Cash Collection</div><div class="v" id="vh-coll-last" style="font-size:18px;margin-top:6px;">—</div><div class="s" id="vh-coll-by">—</div></div>
+      <div class="stat b"><div class="l">Last Service Visit</div><div class="v" id="vh-svc-last" style="font-size:18px;margin-top:6px;">—</div><div class="s" id="vh-svc-by">—</div></div>
+    </div>
+
+    <div class="card" style="padding:0;">
+      <div style="padding:12px 16px;font-size:14px;font-weight:800;">🤝 Sales representative visits</div>
+      <table class="tbl"><thead><tr><th>Date</th><th>Rep</th><th>Purpose</th><th>Notes / outcome</th></tr></thead><tbody id="vh-sales-tbody"></tbody></table>
+    </div>
+    <div class="card" style="padding:0;">
+      <div style="padding:12px 16px;font-size:14px;font-weight:800;">💵 Cash collector visits</div>
+      <table class="tbl"><thead><tr><th>Date</th><th>Collector</th><th style="text-align:right;">Cash collected</th><th style="text-align:right;">Owner share paid</th><th>Notes</th></tr></thead><tbody id="vh-coll-tbody"></tbody></table>
+    </div>
+    <div class="card" style="padding:0;">
+      <div style="padding:12px 16px;font-size:14px;font-weight:800;">🔧 Service technician visits</div>
+      <table class="tbl"><thead><tr><th>Date</th><th>Technician</th><th>Machine</th><th>Reason</th><th>Resolution</th></tr></thead><tbody id="vh-svc-tbody"></tbody></table>
+    </div>
+  </div>
+
+  <!-- ───── DOCUMENTS ───── -->
+  <div class="panel" id="p-documents">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+        <div><div class="card-t">Documents shared with you</div><div class="card-sub" style="margin-bottom:0;">Agreements and records sent by Lucky Charm Gaming · <span id="doc-count">0</span> files</div></div>
+      </div>
+      <div id="doc-list"></div>
+    </div>
+  </div>
+
+  <!-- ───── SERVICE ───── -->
+  <div class="panel" id="p-service">
+    <div class="stat-grid">
+      <div class="stat a"><div class="l">Open</div><div class="v" id="tk-open">0</div></div>
+      <div class="stat b"><div class="l">In Progress</div><div class="v" id="tk-prog">0</div></div>
+      <div class="stat g"><div class="l">Resolved (30d)</div><div class="v" id="tk-res">0</div></div>
+      <div class="stat r"><div class="l">Avg Resolve</div><div class="v" style="font-size:20px;margin-top:6px;">6.4 hrs</div></div>
+    </div>
+    <div class="card" style="padding:0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;">
+        <div style="font-size:14px;font-weight:800;">My service tickets</div>
+        <button class="mini prim" onclick="opTkNew()">+ Raise ticket</button>
+      </div>
+      <table class="tbl"><thead><tr><th>Ticket</th><th>Raised</th><th>Priority</th><th>Issue</th><th>Machine</th><th>Status</th><th>Assigned</th></tr></thead><tbody id="tk-tbody"></tbody></table>
+    </div>
+  </div>
+    </div>
+
+    <nav class="tabbar">
+      <button class="nav-item active" data-t="revenue" onclick="opTab('revenue')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>Revenue
+      </button>
+      <button class="nav-item" data-t="reports" onclick="opTab('reports')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Reports
+      </button>
+      <button class="nav-item" data-t="visits" onclick="opTab('visits')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8z"/></svg>Visits
+      </button>
+      <button class="nav-item" data-t="documents" onclick="opTab('documents')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4a2 2 0 0 1 2-2h7l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M13 2v6h6"/></svg>Docs
+      </button>
+      <button class="nav-item" data-t="service" onclick="opTab('service')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4l-6 6 2 2 6-6a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2z"/></svg>Tickets
+      </button>
+    </nav>
+  </div>
+
+<!-- Ticket detail modal -->
+<div class="mdl" id="tk-detail"><div class="mdl-box">
+  <div class="mdl-h"><div><div style="font-size:12px;font-weight:700;color:var(--text3);font-family:var(--mono);" id="tkd-id"></div><div style="font-size:16px;font-weight:800;" id="tkd-title"></div></div><button class="x" onclick="opTkClose('tk-detail')">×</button></div>
+  <div class="mdl-bd">
+    <div id="tkd-badges" style="display:flex;gap:8px;margin-bottom:14px;"></div>
+    <div style="margin-bottom:16px;">
+      <div class="kv"><span class="k">Raised by</span><span class="vv" id="tkd-reporter"></span></div>
+      <div class="kv"><span class="k">Date raised</span><span class="vv" id="tkd-date"></span></div>
+      <div class="kv"><span class="k">Machine</span><span class="vv" id="tkd-machine"></span></div>
+      <div class="kv"><span class="k">Issue type</span><span class="vv" id="tkd-cat"></span></div>
+      <div class="kv"><span class="k">Assigned to</span><span class="vv" id="tkd-assigned"></span></div>
+    </div>
+    <div style="font-size:11.5px;font-weight:700;color:var(--text3);text-transform:uppercase;margin-bottom:6px;">Description</div>
+    <div style="font-size:13.5px;line-height:1.55;margin-bottom:16px;" id="tkd-desc"></div>
+    <div style="font-size:11.5px;font-weight:700;color:var(--text3);text-transform:uppercase;margin-bottom:10px;">Action history</div>
+    <div class="tl" id="tkd-timeline"></div>
+    <div style="margin-top:14px;display:flex;gap:8px;">
+      <input id="tkd-update" type="text" placeholder="Add a note…" style="flex:1;">
+      <button class="mini" onclick="opTkAddUpdate()">Add</button>
+    </div>
+  </div>
+  <div class="mdl-ft"><button class="mini" onclick="opTkClose('tk-detail')">Close</button></div>
+</div></div>
+
+<!-- Ticket create modal -->
+<div class="mdl" id="tk-create"><div class="mdl-box">
+  <div class="mdl-h"><div style="font-size:16px;font-weight:800;">Raise a service ticket</div><button class="x" onclick="opTkClose('tk-create')">×</button></div>
+  <div class="mdl-bd">
+    <div class="fld"><label>Issue type</label>
+      <select id="tkc-cat" onchange="opTkCatChange()">
+        <option>Hardware issue</option><option>Software issue</option><option>Hand pay / Jackpot</option>
+        <option>Bill validator / cash</option><option>TITO printer</option><option>Connectivity / offline</option>
+        <option>Cabinet / display</option><option>Cash collection / drop</option><option>Other</option>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="fld"><label>Priority <span id="tkc-autop" style="color:var(--accent);text-transform:none;font-weight:600;"></span></label><select id="tkc-prio"><option value="P1">P1 · Critical</option><option value="P2" selected>P2 · High</option><option value="P3">P3 · Normal</option></select></div>
+      <div class="fld"><label>Machine</label><select id="tkc-machine"><option>Location-wide</option></select></div>
+    </div>
+    <div class="fld"><label>Description</label><textarea id="tkc-desc" placeholder="Describe the issue, error codes, what staff or players observed…"></textarea></div>
+    <div id="tkc-err" style="font-size:12.5px;color:var(--red-text);font-weight:600;"></div>
+  </div>
+  <div class="mdl-ft"><button class="mini" onclick="opTkClose('tk-create')">Cancel</button><button class="mini prim" onclick="opTkCreate()">Submit ticket</button></div>
+</div></div>
+
+<!-- Schedule report modal -->
+<div class="mdl" id="sched-mdl"><div class="mdl-box" style="max-width:460px;">
+  <div class="mdl-h"><div style="font-size:16px;font-weight:800;">Schedule report</div><button class="x" onclick="opTkClose('sched-mdl')">×</button></div>
+  <div class="mdl-bd">
+    <div class="fld"><label>Report</label><input type="text" value="Video Gaming Transaction Report" disabled style="background:var(--surface2);"></div>
+    <div class="fld"><label>Cadence</label><select id="sch-cad"><option>Daily</option><option selected>Weekly</option><option>Monthly</option></select></div>
+    <div class="fld"><label>Email to</label><input id="sch-email" type="email" value="patricia@tipsycrow.com"></div>
+    <div id="sch-err" style="font-size:12.5px;color:var(--red-text);font-weight:600;"></div>
+  </div>
+  <div class="mdl-ft"><button class="mini" onclick="opTkClose('sched-mdl')">Cancel</button><button class="mini prim" onclick="opSchedSave()">Schedule</button></div>
+</div></div>
+
+<!-- Document preview modal -->
+<div class="mdl" id="doc-preview"><div class="mdl-box" style="max-width:780px;">
+  <div class="mdl-h"><div><div style="font-size:12px;font-weight:700;color:var(--text3);" id="doc-pv-type"></div><div style="font-size:15px;font-weight:800;" id="doc-pv-name"></div></div><button class="x" onclick="opDocPvClose()">×</button></div>
+  <div class="mdl-bd" id="doc-pv-body" style="min-height:380px;"></div>
+  <div class="mdl-ft"><button class="mini" onclick="opDocPvClose()">Close</button><button class="mini prim" id="doc-pv-dl">⬇ Download</button></div>
+</div></div>
+
+  <div class="toast" id="toast"><span id="toast-ic">✓</span><span id="toast-msg"></span></div>
+</div>
+
+<script>
+
+(function(){
+  var $=function(id){ return document.getElementById(id); };
+  function toast(msg,ic){ var t=$('toast'); $('toast-ic').textContent=ic||'✓'; $('toast-msg').textContent=msg; t.classList.add('show'); clearTimeout(window._tt); window._tt=setTimeout(function(){ t.classList.remove('show'); },2600); }
+  function USD(v){ return '$'+Math.round(v).toLocaleString(); }
+  function USD2(v){ return '$'+(Math.round(v*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function fmtK(v){ return v>=1e6?'$'+(v/1e6).toFixed(2)+'M':v>=1e4?'$'+Math.round(v/1000)+'K':v>=1000?'$'+(v/1000).toFixed(1)+'K':'$'+v; }
+  var SHARE_LOC=0.4, SHARE_OP=0.6, GROWTH=1.065, HOLD=0.081;
+
+  /* ── Machines ── */
+  var MACHINES=[
+    {id:'SLT-01',game:'Buffalo Gold',today:282,wpu:268,hold:8.6,st:'OK'},
+    {id:'SLT-02',game:'Dragon Link',today:265,wpu:255,hold:8.4,st:'OK'},
+    {id:'SLT-03',game:'Lightning Link',today:248,wpu:240,hold:8.3,st:'OK'},
+    {id:'SLT-04',game:'Wheel of Fortune',today:231,wpu:225,hold:8.1,st:'OK'},
+    {id:'SLT-05',game:'Buffalo Grand',today:214,wpu:208,hold:8.2,st:'OK'},
+    {id:'SLT-06',game:'88 Fortunes',today:201,wpu:198,hold:8.0,st:'OK'},
+    {id:'SLT-07',game:'Cleopatra',today:189,wpu:192,hold:7.9,st:'OK'},
+    {id:'SLT-08',game:'Quick Hit',today:176,wpu:180,hold:8.1,st:'OK'},
+    {id:'SLT-09',game:'Top Dollar',today:162,wpu:170,hold:7.8,st:'Watch'},
+    {id:'SLT-10',game:'Triple Diamond',today:151,wpu:158,hold:7.7,st:'OK'},
+    {id:'SLT-11',game:'Double Diamond',today:134,wpu:142,hold:7.6,st:'Watch'},
+    {id:'SLT-12',game:'Bonus Times',today:92,wpu:110,hold:7.4,st:'Watch'}
+  ];
+  function locTotal(days){ var s=0; MACHINES.forEach(function(m){ s+=m.today*days; }); return s; }
+
+  /* ── Periods ── */
+  var period=0, cur=null, custom={days:0};
+  var PERIODS=[
+    {label:'7 Days',sub:'last 7 days',days:7,chartT:'Revenue · last 7 days',chartSub:'Daily net win for your location',series:[2240,2360,2300,2470,2410,2340,2295],slabs:['Mon','Tue','Wed','Thu','Fri','Sat','Sun']},
+    {label:'Week',sub:'this week',days:7,chartT:'Revenue · last 6 weeks',chartSub:'Weekly net win trend',series:[15200,15800,16100,15600,16400,16415],slabs:['W-5','W-4','W-3','W-2','W-1','This']},
+    {label:'Month',sub:'this month',days:30,chartT:'Revenue · last 6 months',chartSub:'Monthly net win trend',series:[64000,66000,68000,69000,70000,70350],slabs:['Jan','Feb','Mar','Apr','May','Jun']},
+    {label:'Quarter',sub:'this quarter',days:90,chartT:'Revenue · last 4 quarters',chartSub:'Quarterly net win trend',series:[188000,196000,205000,211050],slabs:["Q3 '25","Q4 '25","Q1 '26","Q2 '26"]},
+    {label:'Year',sub:'this year',days:360,chartT:'Revenue · last 3 years',chartSub:'Annual net win trend',series:[742000,818000,844200],slabs:['2024','2025','2026 YTD']}
+  ];
+  function buildCustomSeries(days){
+    var base=2345,total=days*base,count,unit;
+    if(days<=21){count=days;unit='D';}else if(days<=126){count=Math.ceil(days/7);unit='Wk';}else{count=Math.ceil(days/30);unit='Mo';}
+    count=Math.max(1,Math.min(12,count));
+    var per=total/count,wave=[0.97,1.03,0.99,1.02,1.0,0.98,1.01,1.03,0.99,1.0,1.02,0.98],s=[],lb=[],acc=0;
+    for(var k=0;k<count;k++){var v=Math.round(per*wave[k%wave.length]);s.push(v);acc+=v;lb.push(unit+' '+(k+1));}
+    s[count-1]+=(total-acc); if(s[count-1]<0)s[count-1]=0; return {series:s,slabs:lb};
+  }
+  function shortDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
+  function customPeriod(){ var d=custom,lbl=shortDate(d.from)+' – '+shortDate(d.to),cs=buildCustomSeries(d.days);
+    return {label:'Custom',sub:lbl,days:d.days,chartT:'Revenue · '+lbl,chartSub:'Custom range · '+d.days+' days',series:cs.series,slabs:cs.slabs}; }
+  window.opApplyCustom=function(){
+    var fi=$('cust-from'),ti=$('cust-to'),info=$('cust-info'); if(!fi||!ti)return;
+    if(!fi.value||!ti.value){info.textContent='Pick both dates.';return;}
+    var fd=new Date(fi.value+'T00:00:00'),td=new Date(ti.value+'T00:00:00');
+    if(isNaN(fd)||isNaN(td)||td<fd){info.textContent='“To” must be on or after “From”.';return;}
+    var days=Math.round((td-fd)/864e5)+1; if(days>730){days=730;info.textContent='Capped at 730 days.';}
+    custom={from:fd,to:td,days:days}; if(days<=730)info.textContent=days+' day'+(days>1?'s':'')+' selected';
+    period=5; applyActive();
+  };
+  function initCustomDefault(){
+    var to=new Date(),from=new Date(); from.setDate(from.getDate()-13);
+    var iso=function(d){return d.toISOString().slice(0,10);};
+    if($('cust-from')&&!$('cust-from').value)$('cust-from').value=iso(from);
+    if($('cust-to')&&!$('cust-to').value)$('cust-to').value=iso(to);
+    custom={from:new Date(iso(from)+'T00:00:00'),to:new Date(iso(to)+'T00:00:00'),days:14};
+    $('cust-info').textContent='14 days selected';
+  }
+
+  function renderChart(){
+    var svg=$('rev-chart'); if(!svg)return;
+    var P=cur||PERIODS[period],vals=P.series,LB=P.slabs;
+    var W=720,H=220,pad=30,bw=(W-pad*2)/vals.length,max=Math.max.apply(null,vals)*1.18;
+    var g='',prior='',bars='',line='',labs='',cum=0,cumv=vals.map(function(v){cum+=v;return cum;}),cmax=cum||1,pts=[];
+    for(var i=0;i<=4;i++){var y=pad+(H-pad*2)*i/4;g+='<line x1="'+pad+'" y1="'+y+'" x2="'+(W-pad)+'" y2="'+y+'" stroke="var(--border)" stroke-width="1"/>';}
+    vals.forEach(function(v,i){
+      var gx=pad+i*bw+bw*0.18,gw=bw*0.64,pw=gw*0.42,cw=gw*0.42,px=gx,cxBar=gx+gw*0.5,pv=Math.round(v/GROWTH);
+      var ph=(H-pad*2)*(pv/max),py=H-pad-ph,h=(H-pad*2)*(v/max),y=H-pad-h,cx=cxBar+cw/2;
+      prior+='<rect x="'+px+'" y="'+py+'" width="'+pw+'" height="'+ph+'" rx="2" fill="var(--border2)"><title>Prior '+LB[i]+': '+USD(pv)+'</title></rect>';
+      var amt=USD(v),tipW=118,tipH=50,tx=Math.max(2,Math.min(W-tipW-2,cx-tipW/2)),ty=Math.max(2,y-tipH-8),pct=((v-pv)/pv*100).toFixed(1);
+      bars+='<g class="eb"><rect x="'+(pad+i*bw)+'" y="'+pad+'" width="'+bw+'" height="'+(H-pad*2)+'" fill="transparent"/>'
+        +'<rect class="ebbar" x="'+cxBar+'" y="'+y+'" width="'+cw+'" height="'+h+'" rx="2" fill="var(--accent)"><title>'+LB[i]+': '+amt+'</title></rect>'
+        +'<g class="ebtip"><rect x="'+tx+'" y="'+ty+'" width="'+tipW+'" height="'+tipH+'" rx="7" fill="var(--text)" opacity="0.95"/>'
+        +'<text x="'+(tx+tipW/2)+'" y="'+(ty+15)+'" font-size="10.5" fill="#fff" text-anchor="middle" opacity="0.8" font-family="DM Mono,monospace">'+LB[i]+'</text>'
+        +'<text x="'+(tx+tipW/2)+'" y="'+(ty+30)+'" font-size="13" font-weight="800" fill="#fff" text-anchor="middle" font-family="DM Mono,monospace">'+amt+'</text>'
+        +'<text x="'+(tx+tipW/2)+'" y="'+(ty+43)+'" font-size="9.5" fill="#7CD992" text-anchor="middle" font-family="DM Mono,monospace">▲ '+pct+'% vs prior</text></g></g>';
+      labs+='<text x="'+(pad+i*bw+bw/2)+'" y="'+(H-pad+16)+'" font-size="11" fill="var(--text3)" text-anchor="middle" font-family="DM Mono,monospace">'+LB[i]+'</text>';
+      labs+='<text x="'+cx+'" y="'+(y-6)+'" font-size="10" fill="var(--text2)" text-anchor="middle" font-weight="700" font-family="DM Mono,monospace">'+fmtK(v)+'</text>';
+      pts.push((pad+i*bw+bw/2)+','+(H-pad-(H-pad*2)*(cumv[i]/cmax)*0.94));
+    });
+    if(pts.length>1){ line='<polyline points="'+pts.join(' ')+'" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linejoin="round"/>';
+      pts.forEach(function(p,i){var xy=p.split(',');line+='<circle cx="'+xy[0]+'" cy="'+xy[1]+'" r="3" fill="var(--blue)"><title>Cumulative: '+USD(cumv[i])+'</title></circle>';}); }
+    svg.innerHTML=g+prior+bars+line+labs;
+  }
+
+  var mSort={key:'net',dir:-1};
+  window.opSortMachines=function(k){ if(mSort.key===k)mSort.dir*=-1; else {mSort.key=k;mSort.dir=-1;} renderMachines(); };
+  function renderMachines(){
+    var tb=$('machines-tbody'); if(!tb)return;
+    var P=cur||PERIODS[period],days=P.days,total=0;
+    var rows=MACHINES.map(function(m){return {m:m,net:m.today*days};});
+    rows.forEach(function(r){total+=r.net;});
+    var q=(($('mach-search')||{}).value||'').trim().toLowerCase();
+    var view=rows.filter(function(r){return !q||r.m.id.toLowerCase().indexOf(q)>=0||r.m.game.toLowerCase().indexOf(q)>=0;});
+    var k=mSort.key,dir=mSort.dir;
+    view.sort(function(a,b){var av=k==='wpu'?a.m.wpu:k==='hold'?a.m.hold:k==='share'?a.net*SHARE_LOC:a.net,bv=k==='wpu'?b.m.wpu:k==='hold'?b.m.hold:k==='share'?b.net*SHARE_LOC:b.net;return (av-bv)*dir;});
+    tb.innerHTML=view.map(function(r){var m=r.m,bd=m.st==='OK'?'<span class="badge done">OK</span>':'<span class="badge open">Watch</span>';
+      return '<tr><td style="font-family:var(--mono);font-weight:700;">'+m.id+'</td><td>'+m.game+'</td>'
+        +'<td style="text-align:right;font-weight:700;">'+USD(r.net)+'</td>'
+        +'<td style="text-align:right;font-weight:700;color:var(--accent);">'+USD(r.net*SHARE_LOC)+'</td>'
+        +'<td style="text-align:right;">$'+m.wpu+'</td><td style="text-align:right;">'+m.hold.toFixed(1)+'%</td>'
+        +'<td style="text-align:right;">'+bd+'</td></tr>';
+    }).join('')||'<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:16px;">No machines match.</td></tr>';
+    $('mcol').textContent='Net Win ('+P.sub+') ↕';
+    $('mach-sub').textContent='Per-terminal net win · '+P.sub;
+    $('mfoot').textContent=USD(total); $('mfoot-share').textContent=USD(total*SHARE_LOC);
+    var sorted=rows.slice().sort(function(a,b){return b.net-a.net;});
+    $('mach-best').textContent=sorted[0].m.id+' · '+sorted[0].m.game+' ('+USD(sorted[0].net)+')';
+    $('mach-worst').textContent=sorted[sorted.length-1].m.id+' · '+sorted[sorted.length-1].m.game+' ('+USD(sorted[sorted.length-1].net)+')';
+  }
+  function renderPeriodTbl(){
+    var tb=$('period-tbody'); if(!tb)return;
+    var rows=PERIODS.map(function(P,i){var net=locTotal(P.days),on=(i===period);
+      return '<tr style="'+(on?'background:var(--surface2);':'')+'"><td style="font-weight:'+(on?'800':'600')+';">'+(on?'▸ ':'')+P.label+'</td><td style="text-align:right;font-weight:700;">'+USD(net)+'</td><td style="text-align:right;color:var(--accent);font-weight:700;">'+USD(net*SHARE_LOC)+'</td></tr>';});
+    if(period===5&&custom.days>0){var n=locTotal(custom.days);rows.push('<tr style="background:var(--surface2);"><td style="font-weight:800;">▸ Custom · '+custom.days+'d</td><td style="text-align:right;font-weight:700;">'+USD(n)+'</td><td style="text-align:right;color:var(--accent);font-weight:700;">'+USD(n*SHARE_LOC)+'</td></tr>');}
+    tb.innerHTML=rows.join('');
+  }
+  function applyActive(){
+    var P=(period===5)?customPeriod():PERIODS[period]; cur=P;
+    var total=locTotal(P.days),prior=total/GROWTH,pct=((total-prior)/prior*100).toFixed(1);
+    if($('period-slider'))$('period-slider').value=period;
+    if($('custom-panel'))$('custom-panel').style.display=(period===5?'flex':'none');
+    for(var k=0;k<6;k++){var el=$('prng-'+k);if(el)el.className='prng'+(k===period?' active':'');}
+    $('k-p').textContent=P.sub; $('k-net').textContent=USD(total); $('k-share').textContent=USD(total*SHARE_LOC);
+    $('k-delta').textContent='▲ '+pct+'% vs prior';
+    $('chart-t').textContent=P.chartT; $('chart-sub').textContent=P.chartSub;
+    $('split-op').textContent=USD(total*SHARE_OP); $('split-loc').textContent=USD(total*SHARE_LOC);
+    $('split-total').textContent=USD(total); $('split-unit').textContent=P.sub;
+    renderChart(); renderMachines(); renderPeriodTbl();
+  }
+  window.opSetPeriod=function(i){ period=Math.max(0,Math.min(5,parseInt(i,10)||0)); if(period===5&&!custom.days)initCustomDefault(); applyActive(); };
+  window.opPeriodSlide=function(v){ window.opSetPeriod(v); };
+  window.opRenderMachines=function(){ renderMachines(); };
+
+  /* ── VGT Report ── */
+  var SITE='128765472',ESTAB='Tipsy Crow, Inc.',vgtSynced='Today, 6:15 AM';
+  function vgtMeta(m){var n=0;for(var i=0;i<m.id.length;i++)n=(n*31+m.id.charCodeAt(i))>>>0;return {uid:'GTK_'+(n.toString(16)+'00000000').slice(0,8),lic:(550000+(n%99999)).toString()};}
+  function vgtRows(){return MACHINES.map(function(m,i){var nti=m.today,hold=m.hold/100,amtPlayed=nti/hold,amtWon=amtPlayed-nti,fundsOut=nti*1.28,fundsIn=fundsOut+nti,cashIn=fundsIn*0.9,voucherIn=fundsIn-cashIn,meta=vgtMeta(m);
+    return {slot:'VGT '+('0'+(i+1)).slice(-2),game:m.game,uid:meta.uid,lic:meta.lic,cashIn:cashIn,voucherIn:voucherIn,fundsIn:fundsIn,fundsOut:fundsOut,credits:0,nti:nti,amtPlayed:amtPlayed,amtWon:amtWon,netPlay:nti,diff:0};});}
+  function vgtDateStr(){var v=($('vgt-date')||{}).value||'2026-06-16',d=new Date(v+'T00:00:00');return isNaN(d)?'2/22/2026':(d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();}
+  var VGTCOLS=['Cash In','Voucher In','Funds In','Funds Out','Current Credits','Net Terminal Income','Amt Played','Amt Won','Net Play','Difference'];
+  function renderVgt(){
+    var host=$('vgt-report'); if(!host)return;
+    var rows=vgtRows(),ds=vgtDateStr(),tot={cashIn:0,voucherIn:0,fundsIn:0,fundsOut:0,credits:0,nti:0,amtPlayed:0,amtWon:0,netPlay:0,diff:0};
+    rows.forEach(function(r){for(var k in tot)tot[k]+=r[k];});
+    var now=new Date();
+    var head='<div style="text-align:center;padding:18px 18px 6px;">'
+      +'<div style="font-weight:800;font-size:16px;">Video Gaming Transaction Report</div>'
+      +'<div style="font-size:12.5px;color:var(--text2);margin-top:3px;">From '+ds+' To '+ds+'</div>'
+      +'<div style="font-size:12.5px;color:var(--text2);">For This Establishment</div>'
+      +'<div style="font-size:11.5px;color:var(--text3);margin-top:4px;">Report Date: '+((now.getMonth()+1)+'/'+now.getDate()+'/'+now.getFullYear())+' · '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})+'</div></div>'
+      +'<div style="padding:8px 18px 4px;font-weight:800;font-size:13px;border-top:1px solid var(--border);margin-top:6px;">'+ESTAB+'<span style="float:right;font-weight:600;color:var(--text3);">Site License Number: '+SITE+'</span></div>';
+    var th='<th>Slot Name</th><th>Unique Identifier</th><th>License #</th>'+VGTCOLS.map(function(c){return '<th style="text-align:right;">'+c+'</th>';}).join('');
+    var body=rows.map(function(r){return '<tr><td style="font-family:var(--mono);font-weight:700;white-space:nowrap;">'+r.slot+'<div style="font-family:var(--font);font-weight:500;color:var(--text3);font-size:11px;">'+r.game+'</div></td><td style="font-family:var(--mono);font-size:11.5px;">'+r.uid+'</td><td style="font-family:var(--mono);font-size:11.5px;">'+r.lic+'</td>'
+      +'<td style="text-align:right;">'+USD2(r.cashIn)+'</td><td style="text-align:right;">'+USD2(r.voucherIn)+'</td><td style="text-align:right;">'+USD2(r.fundsIn)+'</td><td style="text-align:right;">'+USD2(r.fundsOut)+'</td><td style="text-align:right;">'+USD2(r.credits)+'</td><td style="text-align:right;font-weight:700;">'+USD2(r.nti)+'</td><td style="text-align:right;">'+USD2(r.amtPlayed)+'</td><td style="text-align:right;">'+USD2(r.amtWon)+'</td><td style="text-align:right;">'+USD2(r.netPlay)+'</td><td style="text-align:right;">'+USD2(r.diff)+'</td></tr>';}).join('');
+    var foot='<tr style="border-top:2px solid var(--border2);background:var(--surface2);font-weight:800;"><td colspan="3" style="padding:10px 14px;">Totals for '+ESTAB+'</td>'
+      +'<td style="text-align:right;">'+USD2(tot.cashIn)+'</td><td style="text-align:right;">'+USD2(tot.voucherIn)+'</td><td style="text-align:right;">'+USD2(tot.fundsIn)+'</td><td style="text-align:right;">'+USD2(tot.fundsOut)+'</td><td style="text-align:right;">'+USD2(tot.credits)+'</td><td style="text-align:right;">'+USD2(tot.nti)+'</td><td style="text-align:right;">'+USD2(tot.amtPlayed)+'</td><td style="text-align:right;">'+USD2(tot.amtWon)+'</td><td style="text-align:right;">'+USD2(tot.netPlay)+'</td><td style="text-align:right;">'+USD2(tot.diff)+'</td></tr>';
+    host.innerHTML=head+'<table class="tbl" style="font-size:12px;min-width:1050px;"><thead><tr>'+th+'</tr></thead><tbody>'+body+'</tbody><tfoot>'+foot+'</tfoot></table>';
+  }
+  window.opVgtRender=function(){ renderVgt(); };
+  window.opVgtPull=function(){
+    var b=$('vgt-pullbtn'),st=$('vgt-status'); if(b){b.disabled=true;b.textContent='⟳ Syncing…';} if(st){st.className='badge prog';st.textContent='● Syncing';}
+    toast('Connecting to central system…','🔄');
+    setTimeout(function(){ vgtSynced=new Date().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); renderVgt();
+      if(b){b.disabled=false;b.textContent='⟳ Pull latest';} if(st){st.className='badge done';st.textContent='● Connected';}
+      toast('Pulled latest transaction data','✅'); },1100);
+  };
+  window.opVgtCsv=function(){
+    var rows=vgtRows(),ds=vgtDateStr(),lines=[['Slot Name','Game','Unique Identifier','License Number'].concat(VGTCOLS)];
+    rows.forEach(function(r){lines.push([r.slot,r.game,r.uid,r.lic,r.cashIn,r.voucherIn,r.fundsIn,r.fundsOut,r.credits,r.nti,r.amtPlayed,r.amtWon,r.netPlay,r.diff].map(function(x){return typeof x==='number'?Math.round(x*100)/100:x;}));});
+    var csv=lines.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+    try{var bl=new Blob([csv],{type:'text/csv'}),u=URL.createObjectURL(bl),a=document.createElement('a');a.href=u;a.download='VGT_'+ds.replace(/\//g,'-')+'.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);}catch(e){}
+    toast('Report exported (CSV)','⬇️');
+  };
+  function vgtPrintable(){var h=$('vgt-report');return '<!doctype html><html><head><meta charset="utf-8"><title>VGT Report</title><style>body{font-family:Arial;margin:24px;}table{width:100%;border-collapse:collapse;font-size:11px;}th,td{padding:5px 8px;border-bottom:1px solid #ddd;text-align:right;}th:first-child,td:first-child,th:nth-child(2),td:nth-child(2),th:nth-child(3),td:nth-child(3){text-align:left;}thead tr,tfoot tr{background:#f2f5fa;}</style></head><body>'+(h?h.innerHTML:'')+'</body></html>';}
+  window.opVgtDownloadPdf=function(){
+    try{var w=window.open('','_blank');if(w){w.document.write(vgtPrintable());w.document.close();setTimeout(function(){try{w.print();}catch(e){}},300);toast('Opening print / save-as-PDF…','🖨️');return;}}catch(e){}
+    try{var bl=new Blob([vgtPrintable()],{type:'text/html'}),u=URL.createObjectURL(bl),a=document.createElement('a');a.href=u;a.download='VGT_report.html';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);toast('Downloaded print-ready report','⬇️');}catch(e){toast('Download blocked','⚠️');}
+  };
+  window.opVgtEmail=function(){ toast('Report PDF emailed to patricia@tipsycrow.com','✉️'); };
+
+  /* ── Service Tickets ── */
+  var TK=[
+    {id:'SVC-48190',date:'Jun 14, 2026',prio:'P2',cat:'TITO printer',status:'In progress',assigned:'J. Carter',machine:'SLT-08 · Quick Hit',reporter:'Patricia Vance (Owner)',desc:'TITO printer producing faint tickets; players asking for reprints.',timeline:[{t:'Jun 14, 2:40 PM',by:'Patricia Vance',txt:'Ticket raised — faint TITO prints.'},{t:'Jun 15, 10:20 AM',by:'J. Carter',txt:'On-site — replaced print head.'}]},
+    {id:'SVC-48021',date:'Jun 02, 2026',prio:'P3',cat:'Cabinet / display',status:'Resolved',assigned:'J. Carter',machine:'SLT-11 · Double Diamond',reporter:'Patricia Vance (Owner)',desc:'Top-box light strip flickering.',timeline:[{t:'Jun 02, 11:00 AM',by:'Patricia Vance',txt:'Ticket raised.'},{t:'Jun 02, 3:30 PM',by:'J. Carter',txt:'Resolved — replaced LED strip.'}]}
+  ];
+  var SEQ=48218,tkCur=null;
+  function prioBadge(p){return '<span class="badge '+p.toLowerCase()+'">'+p+'</span>';}
+  function statBadge(s){var c=s==='Resolved'?'done':(s==='Open'?'open':'prog');return '<span class="badge '+c+'">'+s+'</span>';}
+  function tkStats(){var o=0,p=0,r=0;TK.forEach(function(t){if(t.status==='Open')o++;else if(t.status==='Resolved')r++;else p++;});$('tk-open').textContent=o;$('tk-prog').textContent=p;$('tk-res').textContent=r;}
+  function renderTk(){
+    var tb=$('tk-tbody'); if(!tb)return;
+    tb.innerHTML=TK.map(function(t){return '<tr style="cursor:pointer;" onclick="opTkOpen(\''+t.id+'\')"><td style="font-family:var(--mono);font-weight:700;">'+t.id+'</td><td>'+t.date+'</td><td>'+prioBadge(t.prio)+'</td><td>'+t.cat+'</td><td style="font-size:12.5px;">'+t.machine+'</td><td>'+statBadge(t.status)+'</td><td'+(t.assigned==='Unassigned'?' style="color:var(--text3);"':'')+'>'+t.assigned+'</td></tr>';}).join('');
+    tkStats();
+    var sel=$('tkc-machine'); if(sel&&sel.options.length<=1){MACHINES.forEach(function(m){var o=document.createElement('option');o.text=m.id+' · '+m.game;sel.add(o);});}
+  }
+  function nowStamp(){return new Date().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}
+  window.opTkOpen=function(id){var t=TK.filter(function(x){return x.id===id;})[0];if(!t)return;tkCur=t;
+    $('tkd-id').textContent=t.id;$('tkd-title').textContent=t.cat;$('tkd-reporter').textContent=t.reporter;$('tkd-date').textContent=t.date;$('tkd-machine').textContent=t.machine;$('tkd-cat').textContent=t.cat;$('tkd-assigned').textContent=t.assigned;$('tkd-desc').textContent=t.desc;
+    $('tkd-badges').innerHTML=prioBadge(t.prio)+' '+statBadge(t.status);
+    tkTimeline(); $('tk-detail').classList.add('open');
+  };
+  function tkTimeline(){var el=$('tkd-timeline');if(!el||!tkCur)return;el.innerHTML=tkCur.timeline.map(function(e){return '<div class="tl-item"><div style="font-size:13px;font-weight:600;">'+e.txt+'</div><div style="font-size:11.5px;color:var(--text3);font-weight:600;margin-top:2px;">'+e.by+' · '+e.t+'</div></div>';}).join('');}
+  window.opTkAddUpdate=function(){var inp=$('tkd-update');if(!inp||!tkCur)return;var v=inp.value.trim();if(!v)return;tkCur.timeline.push({t:nowStamp(),by:'Patricia Vance',txt:v});inp.value='';tkTimeline();toast('Note added to '+tkCur.id,'📝');};
+  window.opTkClose=function(id){$(id).classList.remove('open');};
+  window.opTkCatChange=function(){var cat=$('tkc-cat').value,note=$('tkc-autop'),prio=$('tkc-prio');var hp=(cat==='Hand pay / Jackpot'),off=(cat==='Connectivity / offline');if(hp||off){prio.value='P1';note.textContent='· auto-set to P1';}else note.textContent='';};
+  window.opTkNew=function(){renderTk();$('tkc-err').textContent='';$('tkc-desc').value='';$('tkc-cat').selectedIndex=0;$('tkc-prio').value='P2';opTkCatChange();$('tk-create').classList.add('open');};
+  window.opTkCreate=function(){
+    var cat=$('tkc-cat').value,prio=$('tkc-prio').value,machine=$('tkc-machine').value,desc=$('tkc-desc').value.trim();
+    if(!desc){$('tkc-err').textContent='Please add a short description of the issue.';return;}
+    var id='SVC-'+(SEQ++);
+    var t={id:id,date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),prio:prio,cat:cat,status:'Open',assigned:'Unassigned',machine:machine,reporter:'Patricia Vance (Owner)',desc:desc,timeline:[{t:nowStamp(),by:'Patricia Vance',txt:'Ticket raised — '+cat+'.'}]};
+    TK.unshift(t);renderTk();opTkClose('tk-create');toast('Ticket '+id+' submitted to operator','⚒');opTkOpen(id);
+  };
+
+  /* ── Schedule report ── */
+  var SCHED=[];
+  window.opSchedOpen=function(){ $('sch-err').textContent=''; $('sched-mdl').classList.add('open'); };
+  window.opSchedSave=function(){
+    var cad=$('sch-cad').value, email=($('sch-email').value||'').trim();
+    if(!email||email.indexOf('@')<0){ $('sch-err').textContent='Enter a valid email address.'; return; }
+    var nextMap={Daily:'Tomorrow 8:00 AM',Weekly:'Mon 8:00 AM',Monthly:'1st 8:00 AM'};
+    var ex=SCHED.filter(function(s){return s.email===email;})[0];
+    if(ex){ ex.cad=cad; ex.next=nextMap[cad]; } else { SCHED.push({report:'Video Gaming Transaction Report',cad:cad,email:email,next:nextMap[cad]}); }
+    renderSched(); opTkClose('sched-mdl'); toast('Report scheduled — '+cad.toLowerCase()+' to '+email,'🗓️');
+  };
+  window.opSchedCancel=function(i){ SCHED.splice(i,1); renderSched(); toast('Scheduled delivery cancelled','✕'); };
+  function renderSched(){
+    var tb=$('sched-tbody'); if(!tb)return;
+    tb.innerHTML=SCHED.map(function(s,i){return '<tr><td style="font-weight:700;">'+s.report+'</td><td><span class="badge prog">✉ '+s.cad+'</span></td><td>'+s.email+'</td><td style="color:var(--text3);">'+s.next+'</td><td style="text-align:right;"><button class="mini" onclick="opSchedCancel('+i+')">Cancel</button></td></tr>';}).join('')
+      || '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:18px;">No scheduled deliveries yet — use “Schedule report”.</td></tr>';
+  }
+
+  /* ── Visit History ── */
+  var SALES_VISITS=[
+    {date:'Jun 12, 2026',rep:'Maria Reyes',purpose:'Quarterly business review',notes:'Reviewed net-win trend; pitched swapping SLT-12 (Bonus Times) for a higher-earning title. Owner agreed to trial.'},
+    {date:'May 28, 2026',rep:'Maria Reyes',purpose:'Game mix optimization',notes:'Walked the floor; recommended moving Buffalo Gold nearer the bar. Left updated sell sheet.'},
+    {date:'May 09, 2026',rep:'Maria Reyes',purpose:'Check-in & promo',notes:'Dropped off player promo materials for the spring campaign. Discussed extended weekend hours.'},
+    {date:'Apr 21, 2026',rep:'Maria Reyes',purpose:'Contract renewal prep',notes:'Confirmed 60/40 terms; collected signed marketing consent.'}
+  ];
+  var COLLECTOR_VISITS=[
+    {date:'Jun 15, 2026',who:'NRT Collections · R. Daniels',cash:18420,share:7368,notes:'Routine cash pull from redemption kiosk; cassettes reset. No discrepancies.'},
+    {date:'Jun 08, 2026',who:'NRT Collections · R. Daniels',cash:17960,share:7184,notes:'Weekly collection; owner share remitted via ACH.'},
+    {date:'Jun 01, 2026',who:'NRT Collections · L. Ortiz',cash:18810,share:7524,notes:'Collection + bill validator cash reconciled. Settled prior $120 short.'},
+    {date:'May 25, 2026',who:'NRT Collections · R. Daniels',cash:16740,share:6696,notes:'Routine pull. Kiosk balance topped to float.'}
+  ];
+  var SERVICE_VISITS=[
+    {date:'Jun 15, 2026',tech:'J. Carter',machine:'SLT-08 · Quick Hit',reason:'TITO printer faint prints',res:'Replaced print head; monitoring.'},
+    {date:'Jun 03, 2026',tech:'J. Carter',machine:'SLT-11 · Double Diamond',reason:'Light strip flicker',res:'Replaced LED strip & driver — resolved.'},
+    {date:'May 27, 2026',tech:'D. Nguyen',machine:'SLT-01 · Buffalo Gold',reason:'Hand-pay jackpot lock',res:'Verified payout, W-2G filed, machine reset.'},
+    {date:'May 14, 2026',tech:'J. Carter',machine:'Location-wide',reason:'Preventive maintenance',res:'14-day service cycle; all terminals passed checks.'}
+  ];
+  function renderVisits(){
+    if($('vh-sales-last')){ $('vh-sales-last').textContent=SALES_VISITS[0].date; $('vh-sales-by').textContent=SALES_VISITS[0].rep; }
+    if($('vh-coll-last')){ $('vh-coll-last').textContent=COLLECTOR_VISITS[0].date; $('vh-coll-by').textContent=COLLECTOR_VISITS[0].who.split('·').pop().trim(); }
+    if($('vh-svc-last')){ $('vh-svc-last').textContent=SERVICE_VISITS[0].date; $('vh-svc-by').textContent=SERVICE_VISITS[0].tech; }
+    var st=$('vh-sales-tbody'); if(st) st.innerHTML=SALES_VISITS.map(function(v){return '<tr><td style="white-space:nowrap;">'+v.date+'</td><td style="font-weight:700;">'+v.rep+'</td><td>'+v.purpose+'</td><td style="color:var(--text2);">'+v.notes+'</td></tr>';}).join('');
+    var ct=$('vh-coll-tbody'); if(ct) ct.innerHTML=COLLECTOR_VISITS.map(function(v){return '<tr><td style="white-space:nowrap;">'+v.date+'</td><td style="font-weight:700;">'+v.who+'</td><td style="text-align:right;">'+USD(v.cash)+'</td><td style="text-align:right;color:var(--accent);font-weight:700;">'+USD(v.share)+'</td><td style="color:var(--text2);">'+v.notes+'</td></tr>';}).join('');
+    var vt=$('vh-svc-tbody'); if(vt) vt.innerHTML=SERVICE_VISITS.map(function(v){return '<tr><td style="white-space:nowrap;">'+v.date+'</td><td style="font-weight:700;">'+v.tech+'</td><td style="font-size:12.5px;">'+v.machine+'</td><td>'+v.reason+'</td><td style="color:var(--text2);">'+v.res+'</td></tr>';}).join('');
+  }
+
+  /* ── Documents ── */
+  var DOCS=[
+    {name:'License Agreement',type:'PDF',meta:'Sent Jan 14, 2024 · expires Jan 14, 2027',file:null},
+    {name:'Revenue Share Agreement',type:'PDF',meta:'Sent Jan 14, 2024 · 60/40 split',file:null},
+    {name:'Service Level Contract',type:'PDF',meta:'Updated Mar 02, 2026 · 14-day cadence',file:null},
+    {name:'IGB Location License',type:'PDF',meta:'Issued Feb 01, 2026 · active',file:null},
+    {name:'Certificate of Insurance',type:'PDF',meta:'Renewed Apr 20, 2026 · expires Apr 20, 2027',file:null},
+    {name:'May 2026 Revenue Statement',type:'PDF',meta:'Sent Jun 03, 2026 · owner share statement',file:null}
+  ];
+  function docIcon(t){ var m={PDF:['#fff1f0','#c62828','#ffcdd2'],DOCX:['#e3f0ff','#0d47a1','#90caf9'],XLSX:['#e8f8f2','#0d7a4e','#a8e6cf'],PNG:['#fff8e1','#e65100','#ffe082'],JPG:['#fff8e1','#e65100','#ffe082']}; var c=m[(t||'').toUpperCase()]||['#eef0f4','#555','#d9dde6']; return 'display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:9px;font-size:11px;font-weight:800;background:'+c[0]+';color:'+c[1]+';border:1px solid '+c[2]+';'; }
+  function renderDocs(){
+    var host=$('doc-list'); if(!host)return;
+    host.innerHTML=DOCS.map(function(d,i){return '<div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);">'
+      +'<div style="'+docIcon(d.type)+'">'+(d.type||'FILE')+'</div>'
+      +'<div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:700;">'+d.name+'</div><div style="font-size:12px;color:var(--text3);">'+d.meta+'</div></div>'
+      +'<button class="mini" onclick="opDocView('+i+')">View</button><button class="mini" onclick="opDocDownload('+i+')">Download</button></div>';}).join('');
+    if($('doc-count'))$('doc-count').textContent=DOCS.length;
+  }
+  function escPdf(s){ return String(s).replace(/([()\\])/g,'\\$1'); }
+  function docPdfBlob(title,lines){
+    var content='BT /F1 20 Tf 72 730 Td ('+escPdf(title)+') Tj ET\n',y=696;
+    lines.forEach(function(l){content+='BT /F1 12 Tf 72 '+y+' Td ('+escPdf(l)+') Tj ET\n';y-=20;});
+    var o={};o[1]='<< /Type /Catalog /Pages 2 0 R >>';o[2]='<< /Type /Pages /Kids [3 0 R] /Count 1 >>';
+    o[3]='<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>';
+    o[4]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>';o[5]='<< /Length '+content.length+' >>\nstream\n'+content+'endstream';
+    var pdf='%PDF-1.4\n',off={},pos=pdf.length,i;
+    for(i=1;i<=5;i++){off[i]=pos;var s=i+' 0 obj\n'+o[i]+'\nendobj\n';pdf+=s;pos+=s.length;}
+    var xref=pos;pdf+='xref\n0 6\n0000000000 65535 f \n';
+    for(i=1;i<=5;i++){pdf+=('0000000000'+off[i]).slice(-10)+' 00000 n \n';}
+    pdf+='trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n'+xref+'\n%%EOF';
+    return new Blob([pdf],{type:'application/pdf'});
+  }
+  function docBlob(d){ if(d.file)return d.file; return docPdfBlob(d.name,['Tipsy Crow, Inc. · Las Vegas, NV',d.meta,'','Shared by Lucky Charm Gaming.','','This is a generated copy for the Owner Portal demo.']); }
+  function docHtml(d){
+    var map={
+      'License Agreement':'<p>Video Gaming Terminal Placement &amp; License Agreement between Lucky Charm Gaming (Operator) and Tipsy Crow, Inc. (Establishment).</p><p><strong>Term:</strong> 3 years, auto-renewing annually. <strong>Placement:</strong> up to 12 IGB-licensed terminals.</p>',
+      'Revenue Share Agreement':'<p>Net Terminal Income (NTI) is split <strong>60% Operator / 40% Establishment</strong> after state and municipal taxes. Reconciled monthly against AEGIS-VLCS; owner share remitted by the 10th business day.</p>',
+      'Service Level Contract':'<p>Field service on a 14-day cycle. SLA: P1 within 2h, P2 within 8h, P3 within 24h. Uptime target 98.5%.</p>',
+      'IGB Location License':'<p>Illinois Gaming Board licensed video gaming location. <strong>Status:</strong> Active. <strong>Site License:</strong> 128765472.</p>',
+      'Certificate of Insurance':'<p>Commercial General Liability $2,000,000 aggregate; Property; Workers’ Compensation per statute.</p>',
+      'May 2026 Revenue Statement':'<p><strong>Owner share statement — May 2026.</strong></p><p>Net Terminal Income: $70,350 · Hold 8.1% · Your 40% location share: <strong>$28,140</strong>. Remitted via ACH on Jun 03, 2026.</p>'
+    };
+    var body=map[d.name]||('<p>'+d.meta+'</p>');
+    return '<div style="font-family:Georgia,serif;color:#1a1a2e;background:#fff;padding:32px 38px;border-radius:8px;border:1px solid #e2e6ee;max-width:640px;margin:0 auto;line-height:1.65;box-shadow:0 1px 6px rgba(0,0,0,.06);">'
+      +'<div style="display:flex;justify-content:space-between;border-bottom:2px solid #c0392b;padding-bottom:10px;margin-bottom:18px;"><div style="font-weight:800;font-size:13px;color:#c0392b;">LUCKY CHARM GAMING</div><div style="font-size:11px;color:#777;text-align:right;">Tipsy Crow, Inc.<br>Las Vegas, NV</div></div>'
+      +'<h1 style="font-size:20px;margin:0 0 4px;">'+d.name+'</h1><div style="font-size:11px;color:#888;margin-bottom:16px;">'+d.meta+'</div>'+body
+      +'<div style="margin-top:24px;border-top:1px solid #e2e6ee;padding-top:12px;font-size:12px;color:#555;display:flex;justify-content:space-between;"><span>Shared with: Patricia Vance (Owner)</span><span>Lucky Charm Gaming</span></div></div>';
+  }
+  var docPvUrl=null;
+  window.opDocView=function(i){
+    var d=DOCS[i]; if(!d)return;
+    $('doc-pv-name').textContent=d.name; $('doc-pv-type').textContent=(d.type||'FILE')+' · '+d.meta;
+    var body=$('doc-pv-body'); if(docPvUrl){try{URL.revokeObjectURL(docPvUrl);}catch(e){}docPvUrl=null;}
+    var type=(d.type||'').toUpperCase(),ft=(d.file&&d.file.type)||'';
+    var isImg=['PNG','JPG','JPEG','GIF','WEBP'].indexOf(type)>=0||ft.indexOf('image/')===0;
+    var isText=['TXT','CSV','JSON'].indexOf(type)>=0||ft.indexOf('text/')===0;
+    if(d.file){
+      if(isImg){ try{docPvUrl=URL.createObjectURL(d.file); body.innerHTML='<img src="'+docPvUrl+'" style="max-width:100%;display:block;margin:0 auto;border-radius:var(--r);">';}catch(e){body.innerHTML=docCard(d);} }
+      else if(isText){ body.innerHTML='<div style="color:var(--text3);padding:8px;">Loading…</div>'; try{var fr=new FileReader();fr.onload=function(){body.innerHTML='<pre style="white-space:pre-wrap;font-family:var(--mono);font-size:12.5px;background:var(--surface2);padding:14px;border-radius:var(--r);max-height:60vh;overflow:auto;">'+String(fr.result).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];})+'</pre>';};fr.readAsText(d.file);}catch(e){body.innerHTML=docCard(d);} }
+      else body.innerHTML=docCard(d);
+    } else { body.innerHTML='<div style="background:var(--surface2);padding:18px;border-radius:var(--r);max-height:64vh;overflow:auto;">'+docHtml(d)+'</div>'; }
+    $('doc-pv-dl').onclick=function(){ opDocDownload(i); };
+    $('doc-preview').classList.add('open'); toast('Opening '+d.name,'📂');
+  };
+  function docCard(d){ return '<div style="text-align:center;color:var(--text3);padding:46px 16px;"><div style="font-size:46px;">📄</div><div style="font-weight:800;color:var(--text);margin-top:10px;">'+d.name+'</div><div style="font-size:12.5px;margin-top:4px;">'+(d.type||'FILE')+' · '+d.meta+'</div><div style="font-size:13px;margin-top:12px;">Use Download to open this file.</div></div>'; }
+  window.opDocPvClose=function(){ $('doc-preview').classList.remove('open'); $('doc-pv-body').innerHTML=''; if(docPvUrl){try{URL.revokeObjectURL(docPvUrl);}catch(e){}docPvUrl=null;} };
+  window.opDocDownload=function(i){
+    var d=DOCS[i]; if(!d)return;
+    try{ var bl=docBlob(d),u=URL.createObjectURL(bl),a=document.createElement('a'); a.href=u; a.download=d.file?d.file.name:(d.name.replace(/[^a-z0-9]+/gi,'_')+'.pdf'); document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u); toast('Downloading '+d.name,'⬇️'); }catch(e){ toast('Download blocked','⚠️'); }
+  };
+
+  /* ── Nav (sidebar) ── */
+  var TITLES={revenue:['Revenue Dashboard','Your location revenue across all machines'],reports:['Reporting','Video gaming transaction reports'],visits:['Visit History','Sales, collection & service visits to your location'],documents:['Documents','Files shared with you by the company'],service:['Service Tickets','Raise and track service requests']};
+  window.opTab=function(name){
+    ['revenue','reports','visits','documents','service'].forEach(function(t){
+      var btn=document.querySelector('.nav-item[data-t="'+t+'"]'),pan=$('p-'+t);
+      if(btn)btn.classList.toggle('active',t===name); if(pan)pan.classList.toggle('active',t===name);
+    });
+    var ti=TITLES[name]||['',''];
+    if($('tb-title'))$('tb-title').textContent=ti[0];
+    if($('tb-sub'))$('tb-sub').textContent=ti[1];
+    if(name==='revenue')opSetPeriod(period);
+    if(name==='reports'){ renderVgt(); renderSched(); }
+    if(name==='visits')renderVisits();
+    if(name==='documents')renderDocs();
+    if(name==='service')renderTk();
+    var m=document.getElementById('app-scroll'); if(m)m.scrollTop=0;
+  };
+
+  /* ── Login ── */
+  var booted=false;
+  window.opLogin=function(){
+    var u=($('lg-user')||{}).value||'', p=($('lg-pass')||{}).value||'', err=$('lg-err');
+    if(!u.trim()||!p.trim()){ if(err)err.textContent='Please enter your username and password.'; return; }
+    if(err)err.textContent='';
+    $('login').style.display='none';
+    $('app').style.display='flex';
+    if(!booted){ booted=true; opSetPeriod(0); renderVgt(); renderTk(); renderSched(); renderVisits(); renderDocs(); }
+    opTab('revenue');
+  };
+  window.opLogout=function(){ $('app').style.display='none'; $('login').style.display='flex'; var p=$('lg-pass'); if(p)p.value=''; };
+  window.opLoginKey=function(e){ if(e&&e.key==='Enter') opLogin(); };
+})();
+</script>
+</body>
+</html>
