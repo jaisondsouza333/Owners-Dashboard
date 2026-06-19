@@ -95,39 +95,6 @@
   .toast{position:absolute;bottom:calc(var(--tabbar-h) + 14px);left:50%;transform:translateX(-50%) translateY(120px);background:#1a1f36;color:#fff;padding:11px 17px;border-radius:100px;font-size:13px;font-weight:700;box-shadow:var(--shadow-md);display:flex;gap:8px;z-index:300;transition:transform .25s;white-space:nowrap;}
   .toast.show{transform:translateX(-50%) translateY(0);}
 
-  /* ── Call feature ── */
-  .mini.call{background:var(--green);border-color:var(--green);color:#fff;} .mini.call:hover{background:var(--green-text);}
-  .call-ui{padding:28px 22px 22px;display:flex;flex-direction:column;align-items:center;text-align:center;}
-  .call-avatar{width:76px;height:76px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;margin-bottom:15px;box-shadow:0 8px 22px rgba(192,57,43,.4);}
-  .call-avatar.ring{animation:callring 1.3s infinite;}
-  @keyframes callring{0%,100%{box-shadow:0 8px 22px rgba(192,57,43,.4);}50%{box-shadow:0 8px 30px rgba(192,57,43,.65),0 0 0 9px rgba(192,57,43,.12);}}
-  .call-name{font-size:19px;font-weight:800;letter-spacing:-.2px;}
-  .call-role{font-size:12.5px;color:var(--text3);font-weight:600;margin-top:3px;}
-  .call-num{font-size:13.5px;font-family:var(--mono);color:var(--text2);margin-top:8px;}
-  .call-status{font-size:13px;font-weight:700;color:var(--text3);margin-top:14px;min-height:18px;}
-  .call-status.live{color:var(--green-text);}
-  .call-actions{display:flex;gap:11px;margin-top:20px;width:100%;}
-  .call-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:13px;border-radius:100px;font-family:var(--font);font-size:14.5px;font-weight:800;cursor:pointer;border:1px solid var(--border2);background:var(--surface);color:var(--text2);text-decoration:none;}
-  .call-btn.ok{background:var(--green);border-color:var(--green);color:#fff;}
-  .call-btn.end{background:var(--red);border-color:var(--red);color:#fff;}
-  .call-btn.cancel:active{background:var(--bg);}
-  /* recording player + transcript */
-  .sec-label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;}
-  .rec-card{display:flex;align-items:center;gap:11px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-lg);padding:10px 12px;}
-  .rec-play{width:40px;height:40px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:14px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-  .rec-mid{flex:1;min-width:0;}
-  .rec-wave{display:flex;align-items:center;gap:2px;height:32px;}
-  .rec-wave>span{flex:1;background:var(--border2);border-radius:2px;min-width:2px;transition:background .12s;}
-  .rec-wave>span.on{background:var(--accent);}
-  .rec-time{display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);color:var(--text3);margin-top:5px;}
-  .rec-dl{width:34px;height:34px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;flex-shrink:0;font-size:15px;}
-  .transcript{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-lg);padding:4px 12px;max-height:210px;overflow:auto;}
-  .ts-line{display:flex;gap:9px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12.5px;}
-  .ts-line:last-child{border-bottom:none;}
-  .ts-who{flex-shrink:0;width:80px;font-weight:800;font-size:10.5px;color:var(--text3);line-height:1.5;}
-  .ts-who.me{color:var(--accent);}
-  .ts-txt{color:var(--text);line-height:1.5;}
-
   /* Login */
   .login-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(150deg,#1a1f36,#2a3550 60%,#3a2230);z-index:100;}
   .login-card{width:100%;}
@@ -242,6 +209,14 @@
       <tfoot><tr style="border-top:2px solid var(--border2);background:var(--surface2);"><td colspan="2" style="padding:10px 14px;font-weight:800;">Location total</td><td style="text-align:right;padding:10px 14px;font-weight:800;" id="mfoot">$16,415</td><td style="text-align:right;padding:10px 14px;font-weight:800;color:var(--accent);" id="mfoot-share">$6,566</td><td style="text-align:right;padding:10px 14px;font-weight:700;">$195</td><td style="text-align:right;padding:10px 14px;font-weight:700;">8.1%</td><td></td></tr></tfoot>
       </table>
     </div>
+
+    <div class="card" style="padding:0;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:13px 15px;">
+        <div><div class="card-t">License &amp; Permit Renewals</div><div class="card-sub" style="margin-bottom:0;">Keep your location's licenses current — request a renewal and Lucky Charm will handle it.</div></div>
+        <div id="op-lic-summary" style="font-size:12px;font-weight:700;"></div>
+      </div>
+      <table class="tbl"><thead><tr><th>License / Permit</th><th>Authority</th><th>Expires</th><th style="text-align:right;">Days left</th><th>Status</th><th style="text-align:right;">Action</th></tr></thead><tbody id="op-lic-tbody"></tbody></table>
+    </div>
   </div>
 
   <!-- ───── REPORTS ───── -->
@@ -303,12 +278,9 @@
       <div class="stat r"><div class="l">Avg Resolve</div><div class="v" style="font-size:20px;margin-top:6px;">6.4 hrs</div></div>
     </div>
     <div class="card" style="padding:0;">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;gap:8px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;">
         <div style="font-size:14px;font-weight:800;">My service tickets</div>
-        <div style="display:flex;gap:6px;">
-          <button class="mini call" onclick="opCall('Lucky Charm Dispatch','Service &amp; support line','+17025550148')">📞 Call</button>
-          <button class="mini prim" onclick="opTkNew()">+ Raise ticket</button>
-        </div>
+        <button class="mini prim" onclick="opTkNew()">+ Raise ticket</button>
       </div>
       <table class="tbl"><thead><tr><th>Ticket</th><th>Raised</th><th>Priority</th><th>Issue</th><th>Machine</th><th>Status</th><th>Assigned</th></tr></thead><tbody id="tk-tbody"></tbody></table>
     </div>
@@ -348,12 +320,6 @@
     </div>
     <div style="font-size:11.5px;font-weight:700;color:var(--text3);text-transform:uppercase;margin-bottom:6px;">Description</div>
     <div style="font-size:13.5px;line-height:1.55;margin-bottom:16px;" id="tkd-desc"></div>
-    <div id="tkd-rec-wrap" style="display:none;margin-bottom:16px;">
-      <div class="sec-label">📞 Call recording</div>
-      <div id="tkd-rec"></div>
-      <div class="sec-label" style="margin-top:14px;">Transcript</div>
-      <div class="transcript" id="tkd-transcript"></div>
-    </div>
     <div style="font-size:11.5px;font-weight:700;color:var(--text3);text-transform:uppercase;margin-bottom:10px;">Action history</div>
     <div class="tl" id="tkd-timeline"></div>
     <div style="margin-top:14px;display:flex;gap:8px;">
@@ -361,7 +327,7 @@
       <button class="mini" onclick="opTkAddUpdate()">Add</button>
     </div>
   </div>
-  <div class="mdl-ft"><button class="mini" onclick="opTkClose('tk-detail')">Close</button><button class="mini call" onclick="opCallTicket()">📞 Call</button></div>
+  <div class="mdl-ft"><button class="mini" onclick="opTkClose('tk-detail')">Close</button></div>
 </div></div>
 
 <!-- Ticket create modal -->
@@ -372,9 +338,7 @@
       <select id="tkc-cat" onchange="opTkCatChange()">
         <option>Hardware issue</option><option>Software issue</option><option>Hand pay / Jackpot</option>
         <option>Bill validator / cash</option><option>TITO printer</option><option>Connectivity / offline</option>
-        <option>Cabinet / display</option><option>Cash collection / drop</option>
-        <option>Vault — cash discrepancy</option><option>Vault — access / lock</option>
-        <option>Other</option>
+        <option>Cabinet / display</option><option>Cash collection / drop</option><option>Other</option>
       </select>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
@@ -404,24 +368,6 @@
   <div class="mdl-h"><div><div style="font-size:12px;font-weight:700;color:var(--text3);" id="doc-pv-type"></div><div style="font-size:15px;font-weight:800;" id="doc-pv-name"></div></div><button class="x" onclick="opDocPvClose()">×</button></div>
   <div class="mdl-bd" id="doc-pv-body" style="min-height:380px;"></div>
   <div class="mdl-ft"><button class="mini" onclick="opDocPvClose()">Close</button><button class="mini prim" id="doc-pv-dl">⬇ Download</button></div>
-</div></div>
-
-<!-- Call modal -->
-<div class="mdl" id="call-mdl" onclick="if(event.target===this)opCallClose()"><div class="mdl-box">
-  <div class="call-ui">
-    <div class="call-avatar" id="call-av">LC</div>
-    <div class="call-name" id="call-name">Lucky Charm Dispatch</div>
-    <div class="call-role" id="call-role">Service &amp; support line</div>
-    <div class="call-num" id="call-num">+1 (702) 555-0148</div>
-    <div class="call-status" id="call-status">Ready to call</div>
-    <div class="call-actions" id="call-actions-idle">
-      <button class="call-btn cancel" onclick="opCallClose()">Cancel</button>
-      <a class="call-btn ok" id="call-dial" href="tel:+17025550148" onclick="opCallStart(event)">📞 Call now</a>
-    </div>
-    <div class="call-actions" id="call-actions-live" style="display:none;">
-      <button class="call-btn end" onclick="opCallEnd()">⛔ End call</button>
-    </div>
-  </div>
 </div></div>
 
   <div class="toast" id="toast"><span id="toast-ic">✓</span><span id="toast-msg"></span></div>
@@ -567,6 +513,39 @@
   window.opPeriodSlide=function(v){ window.opSetPeriod(v); };
   window.opRenderMachines=function(){ renderMachines(); };
 
+  /* ── License & permit renewals ── */
+  function opLicDate(y,m,d){ return new Date(y,m-1,d); }
+  var OP_LICENSES=[
+    {name:'Video Gaming Establishment License', auth:'IL Gaming Board (IGB)', expiry:opLicDate(2026,7,9),  requested:false},
+    {name:'Liquor License — State',             auth:'State Liquor Control',  expiry:opLicDate(2026,6,30), requested:false},
+    {name:'Liquor License — Local',             auth:'City of Las Vegas',     expiry:opLicDate(2026,8,15), requested:false},
+    {name:'Business / Operating License',       auth:'City of Las Vegas',     expiry:opLicDate(2026,12,31),requested:false},
+    {name:'Sales & Use Tax Permit',             auth:'Dept. of Revenue',      expiry:opLicDate(2027,1,31), requested:false},
+    {name:'Certificate of Insurance',           auth:'Carrier — Travelers',   expiry:opLicDate(2026,6,5),  requested:false}
+  ];
+  function opLicDaysLeft(d){ var n=new Date(); n.setHours(0,0,0,0); return Math.round((d-n)/86400000); }
+  function opLicState(days){ if(days<0)return{key:'Expired',cls:'p1'}; if(days<=30)return{key:'Expiring',cls:'open'}; if(days<=60)return{key:'Due soon',cls:'prog'}; return{key:'Active',cls:'done'}; }
+  function opLicFmt(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+  function renderLicenses(){
+    var tb=$('op-lic-tbody'); if(!tb) return;
+    var attention=0;
+    tb.innerHTML=OP_LICENSES.map(function(L,i){
+      var days=opLicDaysLeft(L.expiry), st=opLicState(days); if(days<=60) attention++;
+      var daysTxt=days<0?Math.abs(days)+'d overdue':days+'d';
+      var act;
+      if(L.requested){ act='<span class="badge prog">Renewal requested</span>'; }
+      else if(st.key==='Active'){ act='<button class="mini" onclick="opLicRemind('+i+')">Set reminder</button>'; }
+      else { act='<button class="mini prim" onclick="opLicRequest('+i+')">Request renewal</button>'; }
+      var stb = L.requested ? '<span class="badge prog">'+st.key+'</span>' : '<span class="badge '+st.cls+'">'+st.key+'</span>';
+      return '<tr><td style="font-weight:700;">'+L.name+'</td><td style="color:var(--text2);">'+L.auth+'</td><td>'+opLicFmt(L.expiry)+'</td><td style="text-align:right;font-weight:700;">'+daysTxt+'</td><td>'+stb+'</td><td style="text-align:right;white-space:nowrap;">'+act+'</td></tr>';
+    }).join('');
+    var sm=$('op-lic-summary');
+    if(sm){ sm.innerHTML = attention>0 ? '<span class="badge open">\u26a0 '+attention+' need attention \u2264 60 days</span>' : '<span class="badge done">\u2713 All current</span>'; }
+  }
+  window.opLicRequest=function(i){ var L=OP_LICENSES[i]; if(!L) return; L.requested=true; renderLicenses(); toast('Renewal request sent to Lucky Charm for '+L.name,'\ud83d\udd01'); };
+  window.opLicRemind=function(i){ var L=OP_LICENSES[i]; if(!L) return; toast('Reminder set for '+L.name+' \u00b7 we\u2019ll notify you','\ud83d\udd14'); };
+  window.opRenderLicenses=function(){ renderLicenses(); };
+
   /* ── VGT Report ── */
   var SITE='128765472',ESTAB='Tipsy Crow, Inc.',vgtSynced='Today, 6:15 AM';
   function vgtMeta(m){var n=0;for(var i=0;i<m.id.length;i++)n=(n*31+m.id.charCodeAt(i))>>>0;return {uid:'GTK_'+(n.toString(16)+'00000000').slice(0,8),lic:(550000+(n%99999)).toString()};}
@@ -633,12 +612,12 @@
   window.opTkOpen=function(id){var t=TK.filter(function(x){return x.id===id;})[0];if(!t)return;tkCur=t;
     $('tkd-id').textContent=t.id;$('tkd-title').textContent=t.cat;$('tkd-reporter').textContent=t.reporter;$('tkd-date').textContent=t.date;$('tkd-machine').textContent=t.machine;$('tkd-cat').textContent=t.cat;$('tkd-assigned').textContent=t.assigned;$('tkd-desc').textContent=t.desc;
     $('tkd-badges').innerHTML=prioBadge(t.prio)+' '+statBadge(t.status);
-    tkTimeline(); opRenderRecording(t); $('tk-detail').classList.add('open');
+    tkTimeline(); $('tk-detail').classList.add('open');
   };
   function tkTimeline(){var el=$('tkd-timeline');if(!el||!tkCur)return;el.innerHTML=tkCur.timeline.map(function(e){return '<div class="tl-item"><div style="font-size:13px;font-weight:600;">'+e.txt+'</div><div style="font-size:11.5px;color:var(--text3);font-weight:600;margin-top:2px;">'+e.by+' · '+e.t+'</div></div>';}).join('');}
   window.opTkAddUpdate=function(){var inp=$('tkd-update');if(!inp||!tkCur)return;var v=inp.value.trim();if(!v)return;tkCur.timeline.push({t:nowStamp(),by:'Patricia Vance',txt:v});inp.value='';tkTimeline();toast('Note added to '+tkCur.id,'📝');};
-  window.opTkClose=function(id){if(id==='tk-detail'){try{opRecPause();}catch(e){}}$(id).classList.remove('open');};
-  window.opTkCatChange=function(){var cat=$('tkc-cat').value,note=$('tkc-autop'),prio=$('tkc-prio');var crit=(cat==='Hand pay / Jackpot'||cat==='Connectivity / offline'||cat==='Vault — cash discrepancy');if(crit){prio.value='P1';note.textContent='· auto-set to P1';}else note.textContent='';};
+  window.opTkClose=function(id){$(id).classList.remove('open');};
+  window.opTkCatChange=function(){var cat=$('tkc-cat').value,note=$('tkc-autop'),prio=$('tkc-prio');var hp=(cat==='Hand pay / Jackpot'),off=(cat==='Connectivity / offline');if(hp||off){prio.value='P1';note.textContent='· auto-set to P1';}else note.textContent='';};
   window.opTkNew=function(){renderTk();$('tkc-err').textContent='';$('tkc-desc').value='';$('tkc-cat').selectedIndex=0;$('tkc-prio').value='P2';opTkCatChange();$('tk-create').classList.add('open');};
   window.opTkCreate=function(){
     var cat=$('tkc-cat').value,prio=$('tkc-prio').value,machine=$('tkc-machine').value,desc=$('tkc-desc').value.trim();
@@ -647,114 +626,6 @@
     var t={id:id,date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),prio:prio,cat:cat,status:'Open',assigned:'Unassigned',machine:machine,reporter:'Patricia Vance (Owner)',desc:desc,timeline:[{t:nowStamp(),by:'Patricia Vance',txt:'Ticket raised — '+cat+'.'}]};
     TK.unshift(t);renderTk();opTkClose('tk-create');toast('Ticket '+id+' submitted to operator','⚒');opTkOpen(id);
   };
-
-  /* ── Call support / technician (auto-raises a ticket with transcript + recording) ── */
-  var SUPPORT={name:'Lucky Charm Dispatch',role:'Service & support line',phone:'+17025550148'};
-  var TECHS={'J. Carter':{name:'James Carter',role:'Field service technician',phone:'+17025550193'}};
-  var callSecs=0,callTimer=null,callCur=null;
-  function formatPhone(p){var d=(''+p).replace(/[^0-9]/g,'');if(d.length===11&&d.charAt(0)==='1')return '+1 ('+d.slice(1,4)+') '+d.slice(4,7)+'-'+d.slice(7);if(d.length===10)return '('+d.slice(0,3)+') '+d.slice(3,6)+'-'+d.slice(6);return p;}
-  function fmtCallTime(s){var m=Math.floor(s/60),ss=s%60;return m+':'+(ss<10?'0':'')+ss;}
-  window.opCall=function(name,role,phone,opts){
-    callCur={name:name,role:role,phone:phone,ctx:(opts&&opts.context)||null};
-    var initials=name.split(/\s+/).map(function(w){return w.charAt(0);}).join('').slice(0,2).toUpperCase();
-    $('call-av').textContent=initials; $('call-av').classList.remove('ring');
-    $('call-name').textContent=name; $('call-role').textContent=role; $('call-num').textContent=formatPhone(phone);
-    $('call-status').textContent='Ready to call'; $('call-status').classList.remove('live');
-    $('call-dial').setAttribute('href','tel:'+phone);
-    $('call-actions-idle').style.display='flex'; $('call-actions-live').style.display='none';
-    $('call-mdl').classList.add('open');
-  };
-  window.opCallTicket=function(){ if(!tkCur)return; var tech=TECHS[tkCur.assigned];
-    if(tech) opCall(tech.name,tech.role,tech.phone,{context:tkCur.id});
-    else opCall(SUPPORT.name,SUPPORT.role,SUPPORT.phone,{context:tkCur.id}); };
-  window.opCallStart=function(e){ /* no preventDefault — let tel: launch the dialer on mobile */
-    $('call-actions-idle').style.display='none'; $('call-actions-live').style.display='flex';
-    $('call-av').classList.add('ring'); $('call-status').classList.remove('live'); $('call-status').textContent='Calling…';
-    clearTimeout(window._callConnect);
-    window._callConnect=setTimeout(function(){ callSecs=0; $('call-status').classList.add('live'); $('call-status').textContent='Connected · 0:00';
-      clearInterval(callTimer); callTimer=setInterval(function(){ callSecs++; $('call-status').textContent='Connected · '+fmtCallTime(callSecs); },1000);
-    },1600);
-  };
-  window.opCallEnd=function(){ clearInterval(callTimer); clearTimeout(window._callConnect);
-    var secs=callSecs, c=callCur; opCallClose();
-    if(!c){ toast('Call ended','📞'); return; }
-    var ctxTicket = c.ctx ? TK.filter(function(x){return x.id===c.ctx;})[0] : null;
-    var ctxCat = ctxTicket ? ctxTicket.cat : null;
-    var transcript = genTranscript(c.name, ctxCat, secs);
-    var id='SVC-'+(SEQ++);
-    var rec={id:id, title:'Call with '+c.name, dur:secs, transcript:transcript};
-    var t={
-      id:id,
-      date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
-      prio:'P3',
-      cat:(ctxTicket ? 'Call follow-up · '+ctxTicket.cat : 'Phone support call'),
-      status:'Open',
-      assigned:(c.phone===SUPPORT.phone ? 'Dispatch' : c.name),
-      machine:(ctxTicket ? ctxTicket.machine : 'Location-wide'),
-      reporter:'Patricia Vance (Owner)',
-      desc:'Auto-generated from a recorded phone call with '+c.name+' ('+formatPhone(c.phone)+'), duration '+fmtCallTime(secs)+'. Full transcript and call recording are attached below.'+(ctxTicket?' Related to '+ctxTicket.id+'.':''),
-      recording:rec,
-      timeline:[{t:nowStamp(),by:'System',txt:'Service ticket auto-raised from recorded call ('+fmtCallTime(secs)+').'}]
-    };
-    TK.unshift(t); renderTk();
-    if(ctxTicket){ ctxTicket.timeline.push({t:nowStamp(),by:'Patricia Vance',txt:'Called '+c.name+' · '+fmtCallTime(secs)+' — recording filed under '+id+'.'}); }
-    toast('Ticket '+id+' auto-raised · recording attached','📞');
-    opTkOpen(id);
-  };
-  window.opCallClose=function(){ clearInterval(callTimer); clearTimeout(window._callConnect); callSecs=0; var av=$('call-av'); if(av)av.classList.remove('ring'); $('call-mdl').classList.remove('open'); };
-
-  /* ── Transcript generation + call-recording player ── */
-  function esc(s){return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-  function genTranscript(name, ctxCat, dur){
-    var owner='Patricia Vance', first=name.split(' ')[0];
-    var topic = ctxCat ? ctxCat.toLowerCase() : 'a couple of machines acting up on the floor';
-    var lines=[
-      {by:name,me:false,txt:'Lucky Charm service, this is '+first+'. How can I help?'},
-      {by:owner,me:true,txt:"Hi "+first+", it's Patricia over at Tipsy Crow. I'm calling about "+topic+"."},
-      {by:name,me:false,txt:"Thanks Patricia — let me pull up your location. Can you walk me through what you're seeing?"},
-      {by:owner,me:true,txt:(ctxCat ? "It's the "+topic+". It started earlier today and it's affecting play." : "A few machines aren't behaving and I'd like someone to take a look.")},
-      {by:name,me:false,txt:"Understood. Is the unit powered on and showing on our monitoring as online?"},
-      {by:owner,me:true,txt:"Yes, it's powered up. The screen's on but it isn't running right."},
-      {by:name,me:false,txt:"Okay, I'm logging this now and we'll dispatch a technician. I'll flag it so it's prioritized."},
-      {by:owner,me:true,txt:"Perfect. How soon can someone get out here?"},
-      {by:name,me:false,txt:"We should have a tech on-site within today's service window. You'll get a ticket number to track it."},
-      {by:owner,me:true,txt:"Great — thank you so much for the help."},
-      {by:name,me:false,txt:"You're welcome, Patricia. The ticket's in the system. Call back any time if anything changes."}
-    ];
-    var keep=Math.max(4, Math.min(lines.length, Math.round((dur||0)/6)+5));
-    return lines.slice(0,keep);
-  }
-  var recCur=null, recState='idle', recPos=0, recRAF=null, recT0=0;
-  function buildWave(n){var h='';for(var i=0;i<n;i++){var ht=20+Math.round(Math.abs(Math.sin(i*0.65))*55+(i%3)*10);if(ht>92)ht=92;h+='<span style="height:'+ht+'%"></span>';}return h;}
-  function updateWave(frac){var wave=$('rec-wave'); if(!wave)return; var bars=wave.children, on=Math.floor(bars.length*frac); for(var i=0;i<bars.length;i++){ if(i<on)bars[i].classList.add('on'); else bars[i].classList.remove('on'); } }
-  window.opRenderRecording=function(t){
-    var w=$('tkd-rec-wrap'); if(!w)return;
-    if(!t.recording){ w.style.display='none'; recCur=null; return; }
-    w.style.display='block'; recCur=t.recording; recState='idle'; recPos=0;
-    $('tkd-rec').innerHTML='<div class="rec-card"><button class="rec-play" id="rec-btn" onclick="opRecToggle()">▶</button>'+
-      '<div class="rec-mid"><div class="rec-wave" id="rec-wave">'+buildWave(40)+'</div>'+
-      '<div class="rec-time"><span id="rec-cur">0:00</span><span id="rec-dur">'+fmtCallTime(recCur.dur)+'</span></div></div>'+
-      '<button class="rec-dl" onclick="opRecDownload()" title="Download transcript">⬇</button></div>';
-    $('tkd-transcript').innerHTML=recCur.transcript.map(function(l){return '<div class="ts-line"><span class="ts-who'+(l.me?' me':'')+'">'+esc(l.by)+'</span><span class="ts-txt">'+esc(l.txt)+'</span></div>';}).join('');
-    updateWave(0);
-  };
-  function speakTranscript(){ if(!recCur||!window.speechSynthesis)return; try{ recCur.transcript.forEach(function(l){ var u=new SpeechSynthesisUtterance(l.txt); u.rate=1.05; u.pitch=l.me?1.15:0.9; window.speechSynthesis.speak(u); }); }catch(e){} }
-  function finishRec(){ recState='idle'; recPos=0; var b=$('rec-btn'); if(b)b.textContent='▶'; var c=$('rec-cur'); if(c)c.textContent='0:00'; updateWave(0); cancelAnimationFrame(recRAF); try{if(window.speechSynthesis)window.speechSynthesis.cancel();}catch(e){} }
-  window.opRecToggle=function(){ if(!recCur)return;
-    if(recState==='playing'){ opRecPause(); return; }
-    if(recCur.dur<=0){ toast('No audio captured for this call','📞'); return; }
-    var fresh=(recPos<0.4); recState='playing'; var b=$('rec-btn'); if(b)b.textContent='⏸'; recT0=Date.now()-recPos*1000;
-    if(fresh){ try{ if(window.speechSynthesis){ window.speechSynthesis.cancel(); speakTranscript(); } }catch(e){} }
-    cancelAnimationFrame(recRAF);
-    (function tick(){ if(recState!=='playing')return; recPos=(Date.now()-recT0)/1000;
-      if(recPos>=recCur.dur){ recPos=recCur.dur; var c=$('rec-cur'); if(c)c.textContent=fmtCallTime(Math.floor(recCur.dur)); updateWave(1); finishRec(); return; }
-      var cu=$('rec-cur'); if(cu)cu.textContent=fmtCallTime(Math.floor(recPos)); updateWave(recPos/recCur.dur); recRAF=requestAnimationFrame(tick);
-    })();
-  };
-  window.opRecPause=function(){ if(recState!=='playing')return; recState='paused'; var b=$('rec-btn'); if(b)b.textContent='▶'; cancelAnimationFrame(recRAF); try{if(window.speechSynthesis)window.speechSynthesis.cancel();}catch(e){} };
-  window.opRecDownload=function(){ if(!recCur)return;
-    var txt='CALL RECORDING — TRANSCRIPT\r\n'+(recCur.title||'')+'\r\nTicket: '+(recCur.id||'')+'\r\nDuration: '+fmtCallTime(recCur.dur)+'\r\n'+new Array(40).join('-')+'\r\n\r\n'+recCur.transcript.map(function(l){return l.by+':  '+l.txt;}).join('\r\n');
-    var blob=new Blob([txt],{type:'text/plain'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(recCur.id||'call')+'-transcript.txt'; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){URL.revokeObjectURL(a.href);},1500); toast('Transcript downloaded','⬇'); };
 
   /* ── Schedule report ── */
   var SCHED=[];
@@ -883,7 +754,7 @@
     var ti=TITLES[name]||['',''];
     if($('tb-title'))$('tb-title').textContent=ti[0];
     if($('tb-sub'))$('tb-sub').textContent=ti[1];
-    if(name==='revenue')opSetPeriod(period);
+    if(name==='revenue'){ opSetPeriod(period); renderLicenses(); }
     if(name==='reports'){ renderVgt(); renderSched(); }
     if(name==='visits')renderVisits();
     if(name==='documents')renderDocs();
